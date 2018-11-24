@@ -174,7 +174,7 @@ class Game(QWidget):
             if p[0] == -1 and p[1] == -1 and p[2] == -1:
                 points = []
             else:
-                points = self.drawBoard.getpoints()
+                points = self.drawBoard.getPoints()
             i = 0
             while(i < len(p) - 3):
                 points.append(point(p[i], p[i + 1], p[i + 2]))
@@ -184,7 +184,7 @@ class Game(QWidget):
 
     def handleSend(self):
         if self.role:
-            points = self.drawBoard.getpoints()
+            points = self.drawBoard.getPoints()
             text = str(point(-1, -1, -1))
             for i in range(len(points)):
                 if len(text) > 0:
