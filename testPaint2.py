@@ -5,7 +5,6 @@ from PyQt5.QtCore import *
 from copy import deepcopy
 import qtawesome
 
-
 class point():
     def __str__(self):
         return "%s.%s.%s" % (self.x, self.y, self.color)
@@ -16,20 +15,21 @@ class point():
         self.y = y
         self.color = color
 
-
 class Canvas(QWidget):
 
     def __init__(self, height=500, width=500):
         super(Canvas, self).__init__()
 
         # resize设置宽高，move设置位置
-        self.resize(height, width)
+        self.height = height
+        self.width = width
+        self.resize(self.height, self.width)
         # self.move(100, 100)
         # self.setWindowTitle("不简单的画板1.0")
 
         # 初始化颜色、线宽和线型
-        self.color = Qt.black
-        self.width = 2
+        self.color = 2
+        self.lineWidth = 2
         self.line = Qt.SolidLine
 
         # 是否可以操作
@@ -40,17 +40,17 @@ class Canvas(QWidget):
 
         # 撤销按钮
         self.revokeButton = QPushButton(qtawesome.icon('fa.undo', color='grey'), '', self)
-        self.revokeButton.move(473, 0)
+        self.revokeButton.move(450, 0)
         self.revokeButton.clicked.connect(self.revoke)
 
         # 清空按钮
         self.refreshButton = QPushButton(qtawesome.icon('fa.refresh', color='grey'), '', self)
-        self.refreshButton.move(473, 20)
+        self.refreshButton.move(450, 20)
         self.refreshButton.clicked.connect(self.refresh)
 
         # 颜色
         self.colorButton = QPushButton('', self)
-        self.colorButton.move(473, 40)
+        self.colorButton.move(450, 40)
         self.colorButton.clicked.connect(self.setPenColor)
         self.colorButton.setIcon(qtawesome.icon('fa.circle', color=QColor(self.color)))
 
@@ -82,7 +82,7 @@ class Canvas(QWidget):
                 if point_start.x != -1 and point_end.x != -1:
                     qp.drawLine(point_start.x, point_start.y, point_end.x, point_end.y)
                 elif point_start.x == -1:
-                    qp.setPen(QPen(QColor(point_start.color), self.width, self.line))
+                    qp.setPen(QPen(QColor(point_start.color), self.lineWidth, self.line))
                 point_start = point_end
 
     def mouseMoveEvent(self, event):
@@ -93,10 +93,11 @@ class Canvas(QWidget):
         '''
         if self.role:
             # 中间变量point_now提取当前点
-            point_now = point(event.pos().x(), event.pos().y())
-            # p_now添加到self.points中
-            self.points.append(point_now)
-            self.update()
+            point_now = point(event.pos().x(), event.pos().y(), self.color)
+            if point_now.x >= 0 and point_now.x <= self.width and point_now.y >=0 and point_now.y <= self.height:
+                # point_now添加到self.points中
+                self.points.append(point_now)
+                self.update()
 
     def mouseReleaseEvent(self, event):
         '''
@@ -146,7 +147,7 @@ class Canvas(QWidget):
         self.points = p
         self.update()
 
-    def getpoints(self):
+    def getPoints(self):
         return deepcopy(self.points)
 
 
@@ -155,7 +156,7 @@ if __name__ == "__main__":
     ex = Canvas()
     ex.show()
     # print(str(ex.getpoints()))
-    for p in ex.getpoints():
-        print(p)
-        print(str(p))
+    # for p in ex.getpoints():
+    #     print(p)
+    #     print(str(p))
     sys.exit(app.exec_())
