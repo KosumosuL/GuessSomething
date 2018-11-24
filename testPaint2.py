@@ -33,24 +33,24 @@ class Canvas(QWidget):
         self.line = Qt.SolidLine
 
         # 是否可以操作
-        self.role = False
+        self.role = True
 
         # setMouseTracking设置为False，否则不按下鼠标时也会跟踪鼠标事件
         self.setMouseTracking(False)
 
         # 撤销按钮
         self.revokeButton = QPushButton(qtawesome.icon('fa.undo', color='grey'), '', self)
-        self.revokeButton.move(450, 0)
+        self.revokeButton.move(473, 0)
         self.revokeButton.clicked.connect(self.revoke)
 
         # 清空按钮
         self.refreshButton = QPushButton(qtawesome.icon('fa.refresh', color='grey'), '', self)
-        self.refreshButton.move(450, 20)
+        self.refreshButton.move(473, 20)
         self.refreshButton.clicked.connect(self.refresh)
 
         # 颜色
         self.colorButton = QPushButton('', self)
-        self.colorButton.move(450, 40)
+        self.colorButton.move(473, 40)
         self.colorButton.clicked.connect(self.setPenColor)
         self.colorButton.setIcon(qtawesome.icon('fa.circle', color=QColor(self.color)))
 
@@ -78,6 +78,7 @@ class Canvas(QWidget):
         '''
         if len(self.points):
             point_start = self.points[0]
+            qp.setPen(QPen(QColor(point_start.color), self.lineWidth, self.line))
             for point_end in self.points:
                 if point_start.x != -1 and point_end.x != -1:
                     qp.drawLine(point_start.x, point_start.y, point_end.x, point_end.y)
