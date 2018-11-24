@@ -52,6 +52,7 @@ class App(QWidget):
     def connect(self):
         self.sock.connectToHost("192.168.1.100", 8888)
         self.udpSocket.bind(8080)
+        print('UDP is listening port 8080')
         linkmessage = b'link start'
         if self.sock.isWritable():
             self.sock.write(linkmessage)
