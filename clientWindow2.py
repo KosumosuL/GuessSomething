@@ -190,7 +190,7 @@ class Game(QWidget):
                 if len(text) > 0:
                     text += "."
                 text += str(points[i])
-                if i == len(points) - 1 or len(text) > 1000:
+                if i == len(points) - 1 or len(text) > 950:
                     message = bytes(text, encoding="utf-8")
                     print(message)
                     self.udpSocket.writeDatagram(message, QHostAddress("192.168.1.101"), 8080)
