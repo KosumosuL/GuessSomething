@@ -33,7 +33,7 @@ class Canvas(QWidget):
         self.line = Qt.SolidLine
 
         # 是否可以操作
-        self.role = True
+        self.role = False
 
         # setMouseTracking设置为False，否则不按下鼠标时也会跟踪鼠标事件
         self.setMouseTracking(False)
@@ -94,7 +94,7 @@ class Canvas(QWidget):
         if self.role:
             # 中间变量point_now提取当前点
             point_now = point(event.pos().x(), event.pos().y(), self.color)
-            if point_now.x >= 0 and point_now.x <= self.width and point_now.y >=0 and point_now.y <= self.height:
+            if point_now.x >= 0 and point_now.x <= self.width and point_now.y >=0 and point_now.y <= self.height or len(self.points) > 1 and self.points[-1].x >= 0 and point_now.x != -1:
                 # point_now添加到self.points中
                 self.points.append(point_now)
                 self.update()
