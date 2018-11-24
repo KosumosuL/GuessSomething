@@ -33,7 +33,7 @@ class Canvas(QWidget):
         self.line = Qt.SolidLine
 
         # 是否可以操作
-        self.role = True
+        self.role = False
 
         # setMouseTracking设置为False，否则不按下鼠标时也会跟踪鼠标事件
         self.setMouseTracking(False)
