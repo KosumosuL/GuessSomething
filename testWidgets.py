@@ -8,7 +8,7 @@ from math import *
 DEFAULT_HEAD = 'icons/qq.png'
 DEFAULT_MSG = 'Hello is there anyone?'
 DEFAULT_IMG = 'icons/img.png'
-DEFAULT_MSG = "Hello World,zai zhe ge shijie shang meiyou shei nenggou sheipan wo"
+DEFAULT_MSG = "Hello World"
 
 
 def checkContainChinese(s):  # 判断是否为英文
@@ -35,9 +35,9 @@ class BubbleText(QLabel):
     """
     文字的显示  主要是控件的大小调节，
     起初准备用QTextEdit后来发现实现起来很难控制大小和混动条！
-    只能舍弃次用QLabel继承实现了，关于控件的水平大小采用控制字符数量的方法(ヘ(_ _ヘ))，
-    考虑到一个中文字符的宽度大概是3倍英文字符因此出现了checkContainChinese和splitStringByLen函数
-    （我也不记得哪儿抄来的方法了）。在输入调用super(BubbleText, self).__init__(myText)
+    只能舍弃次用QLabel继承实现了，关于控件的水平大小采用控制字符数量的方法，
+    考虑到一个中文字符的宽度大概是3倍英文字符因此出现了checkContainChinese和splitStringByLen函数。
+    在输入调用super(BubbleText, self).__init__(myText)
     前就把字符用\n分割好来显示"""
     border = 5
     trigon = 15

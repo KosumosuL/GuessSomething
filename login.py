@@ -69,7 +69,6 @@ class App(QWidget):
             data = bytes(self.sock.readLine()).decode().rstrip()
             print("dialog recv  " + data)
             if data == 'link finish':
-
                 if self.sock.isWritable():
                     self.sock.write(self.tmpName.encode())
                 self.swi = Switch(self.tmpName, self.sock, self.udpSocket)
@@ -84,19 +83,12 @@ class App(QWidget):
         if self.handle.text() in self.account and self.password.text() == self.account[self.handle.text()]:
             self.isok = True
             self.tmpName = self.handle.text()
-            # self.connect(self.handle.text())
 
     @pyqtSlot()
     def accept(self):
         self.check()
         if self.isok == True:
-            # self.hide()
             self.connect()
-            # self.swi = Switch(self.tmpName, self.sock)
-            # self.swi.show()
-            # del self.sock
-            # print("Login Successfully!")
-            # self.close()
         else:
             QMessageBox.question(self, 'Error', 'Incorrect Password!', QMessageBox.Ok)
 

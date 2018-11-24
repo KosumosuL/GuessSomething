@@ -33,7 +33,7 @@ class Canvas(QWidget):
         self.line = Qt.SolidLine
 
         # 是否可以操作
-        self.role = False
+        self.role = True
 
         # setMouseTracking设置为False，否则不按下鼠标时也会跟踪鼠标事件
         self.setMouseTracking(False)
@@ -155,8 +155,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     ex = Canvas()
     ex.show()
-    # print(str(ex.getpoints()))
-    # for p in ex.getpoints():
-    #     print(p)
-    #     print(str(p))
     sys.exit(app.exec_())

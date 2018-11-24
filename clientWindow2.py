@@ -2,15 +2,10 @@ from testPaint2 import *
 # from testPaint import
 from testWidgets import MsgList, BubbleText
 from testGues import *
-from backup.testThread import *
+# from backup.testThread import *
 from PyQt5.QtNetwork import QHostAddress
 
-GAME_TIME = 10
-
-# class SendThread(QThread):
-#     def __init__(self):
-#         super().__init__()
-        # self.x =
+GAME_TIME = 20
 
 class Game(QWidget):
 
@@ -24,9 +19,6 @@ class Game(QWidget):
         self.timer.timeout.connect(self.onTimerOut)
         self.role = False        # True为绘画者
         self.gameTitle = " "
-        # self.sendTd = SendThread()
-        # self.recvTd = RecvThread()
-
         self.width = 700
         self.height = 600
         self.initUI()
@@ -142,18 +134,18 @@ class Game(QWidget):
             if role == True:    # if you are painter
                 self.tipLabel.setText(self.title.getTitle(titleIdx))
                 self.drawBoard.setDisabled(False)
-                # self.sendTd.start()
+                self.drawBoard.setRole(role)
             else:
                 self.tipLabel.setText(self.title.getTip(titleIdx))
                 self.drawBoard.setDisabled(True)
-                # self.recvTd.start()
+                self.drawBoard.setRole(role)
             self.timer.start()
 
 
     def stopGame(self, message="nothing"):
         if self.swiBtn.text() == 'gaming':
             self.swiBtn.setText('next')
-        QMessageBox.information (self, 'result', message, QMessageBox.Ok)
+        QMessageBox.information(self, 'result', message, QMessageBox.Ok)
 
     def getSocket(self, socket, udpSocket):
         """从登录框中获取socket"""
@@ -202,50 +194,41 @@ class Game(QWidget):
             data = bytes(self.sock.readLine()).decode().rstrip()
             print("chat room recv: " + data)        #data: role:message
 
-            # chat message
-            head, junk, data = data.partition(":")
-            if head == "message":   # message:name:message
-                print("say: " + data)               #data: name:message
-                name, junk, message = data.partition(":")
-                self.chatBoard.addTextMsg(name, message, True)      #from ${nickname}
-            # system broadcast
-            elif head == "broadcast":
-                print("sys:  " + data)
-                self.chatBoard.addTextMsg("system", data, True)      # from "system"
-            # game start
-            elif head == "start":
-                print("start message: " + data)     # data: titleIdx.role
-                titleIdx = int(data.split('.')[0])
-                role = (data.split('.')[1] == self.nickName)
-                self.startGame(titleIdx, role)
-            # game stop
-            elif head == "stop":
-                print("stop message: " + data)
-                self.stopGame(data)
-
-            # elif self.role == False and head == "points":    # 处理绘图板传来的点tuple  points:pnum
-            #     pnum = int(data)
-            #     pts = list()
-            #     for i in range(pnum):
-            #         pt = bytes(self.sock.readLine()).decode().rstrip()
-            #         print(pt)
-            #         pt = pt[1:len(pt) - 2]
-            #         pp = pt.split(',')
-            #         pot = point(pp[0], pp[1], pp[2], pp[3], pp[4])
-            #         pts.append(pot)
-            #     self.drawBoard.setPoints(pts)
+            try:
+                # chat message
+                head, junk, data = data.partition(":")
+                if head == "message":   # message:name:message
+                    print("say: " + data)               #data: name:message
+                    name, junk, message = data.partition(":")
+                    self.chatBoard.addTextMsg(name, message, True)      #from ${nickname}
+                # system broadcast
+                elif head == "broadcast":
+                    print("sys:  " + data)
+                    self.chatBoard.addTextMsg("system", data, True)      # from "system"
+                # game start
+                elif head == "start":
+                    print("start message: " + data)     # data: titleIdx.role
+                    titleIdx = int(data.split('.')[0])
+                    role = (data.split('.')[1] == self.nickName)
+                    self.startGame(titleIdx, role)
+                # game stop
+                elif head == "stop":
+                    print("stop message: " + data)
+                    self.stopGame(data)
+            except Exception:
+                print("unexpected data: " + data)
 
     def send(self, message):
-        print(message + "   is sent")
+        # print(message + "   is sent")
         if self.sock.isWritable():
             self.sock.write(message.encode())
-        print("send finish")
+        # print("send finish")
 
 
     @pyqtSlot()
     def send_click(self):
         sendMessage = self.sendContent.toPlainText()
-        print(sendMessage)
+        # print(sendMessage)
 
         if sendMessage != "":
             # check answer
@@ -261,27 +244,9 @@ class Game(QWidget):
     def onTimerOut(self):
         self.gameTime = self.gameTime - 1
         self.lcd.display(str(self.gameTime).zfill(3))
-
-        # print(str(len(self.drawBoard.getpoints())) + "       dsfadsfsdf")
-        # if self.role == True and self.gameTime != 0:
-        #     self.send(self.nickName + ':points')
-        #     print(1)
-        #     print(len(self.drawBoard.getpoints()))
-        #     self.send(len(self.drawBoard.getpoints()))
-        #     print(22)
-        #     for p in self.drawBoard.getpoints():
-        #         print(p)
-        #         self.send(str(p))
-        #     # print(str(point(self.drawBoard.getpoints()[0])))
-        #     # self.send(self.nickName + ':points:' + str(self.drawBoard.getpoints()))
-
         self.handleSend()
 
         if self.gameTime == 0:
-            # if self.role == True:    # if you are painter
-            #     self.sendTd.start()
-            # else:
-            #     self.recvTd.start()
             self.timer.stop()
             self.send(self.nickName + ':timeout')
 
@@ -304,5 +269,5 @@ class Game(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Game("sdjs")
+    ex = Game("ano")
     sys.exit(app.exec_())

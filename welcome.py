@@ -9,7 +9,7 @@ class Switch(QWidget):
 
     def __init__(self, nickName, socket, udpSocket):
         super().__init__()
-        self.title = 'GUI Sample'
+        self.title = 'Welcome Sample'
         self.width = 240
         self.height = 180
         self.nickName = nickName
@@ -36,7 +36,6 @@ class Switch(QWidget):
         gameButton.clicked.connect(self.g_click)
         hbox.addWidget(gameButton)
         windowLayout.addLayout(hbox)
-        # help qmessage
 
         self.setLayout(windowLayout)
 
@@ -54,10 +53,7 @@ class Switch(QWidget):
         print(self.udpSocket)
         self.game = Game(self.nickName)
         self.game.getSocket(self.sock, self.udpSocket)
-        print(1)
         self.game.show()
-        # self.game._signal.connect(self.re_show)
-        print("ok")
 
     @pyqtSlot()
     def re_show(self):

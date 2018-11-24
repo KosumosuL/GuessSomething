@@ -37,7 +37,7 @@ def sendToAll(bulletin, role='broadcast'):
 
 # 发布服务器通知, 主线程广播
 def MainThreadFunc():
-    global someoneleft
+
     while True:
         if len(sockList) > 1:
             if allright(readyList):     # 所有人已准备，发送start
@@ -58,15 +58,8 @@ def MainThreadFunc():
                 winList.clear()
                 timeoutList.clear()
 
-        if someoneleft and len(sockList) < 2:
-            sendToAll("SOMEONE LEFT", 'stop')
-            someoneleft = False
         # message = input()
         # sendToAll(message)
-
-# 接受painter client udp发送的信息，广播给其他clients
-# def udpThreadFunc():
-#     while True:
 
 
 # 后台子线程，用于信息传输
@@ -92,11 +85,8 @@ def subThreadFunc(myConn, connIdx):
                 mutex.acquire()
                 nameDict[connIdx] = nickName                    # 将初始化昵称加入至在线人列表
                 sockList.append(myConn)                         # 将连接加入在线客户端列表
-                # mutex.release()
-                # myConn.send('[correct]:[success]\n'.encode())   # 发送链接成功
                 break
             else:
-                # myConn.send('[correct]:[failure]\n'.encode())   # 发送链接失败
                 continue
     if isContinue:
         print('90 connection', connIdx, ' has nickName :', nickName)
@@ -105,15 +95,11 @@ def subThreadFunc(myConn, connIdx):
         note = nickName + "加入游戏，当前在线用户有" + str(nameDict)
         sendToAll(note)
         mutex.release()
-        # sendToOthers(connIdx, nickName + ':[enter]:[' + nameDict[connIdx] + ']')    # 向其他人发送自己加入房间
-        # sendToMySelf(connIdx, nickName + ':[Tip]:%s' % list(nameDict.values()))     # 向自己发送当前在线人员
-        # sendSockNum()                                                   # 向所有人发送当前人数
 
         while True:
             if isExit:
                 sendToMySelf(connIdx, 'exit')  # 向自己发送断开连接指令
                 leave(myConn, connIdx)         # 告诉其他人我已离开
-                # sendSockNum()                  # 向所有人发送当前人数
                 return
             else:
                 try:
@@ -133,27 +119,11 @@ def subThreadFunc(myConn, connIdx):
                         mutex.acquire()
                         timeoutList.append(connIdx)
                         mutex.release()
-                    # elif recvedMsg == nameDict[connIdx] + ':points':
-                    #
-                    #     pnum = int(myConn.recv(1024).decode())
-                    #     print(pnum)
-                    #     sendToOthers(connIdx, str(pnum), 'points')
-                    #     for i in range(pnum):
-                    #         pt = myConn.recv(1024).decode()
-                    #         for otherSock in sockList:
-                    #             if otherSock.fileno() != connIdx:
-                    #                 try:
-                    #                     otherSock.send(pt.encode())
-                    #                     print(pt)
-                    #                 except Exception as mException:
-                    #                     print('22 exception is : %s' % mException)
-                        # sendToMySelf()
                     else:
                         print('108', nameDict[connIdx], ':', recvedMsg) # 输出接收到的消息
                         sendToOthers(connIdx, nameDict[connIdx] + ':' + recvedMsg)
                 except (OSError, ConnectionResetError):
                     leave(myConn, connIdx)                              # 客户端直接退出时执行异常连接断开
-                    someoneleft = True
                     return
 
 
@@ -165,6 +135,7 @@ def isName(nickName):
         return True  # 不在列表中返回True
     return False
 
+# 判断是否完成
 def allright(memList):
     for idx in nameDict.keys():
         if idx not in memList:
@@ -178,7 +149,7 @@ def leave(myConn, connIdx):
     except ValueError as mValueError:
         print('121 mValueError is : %s' % mValueError)
     print('122', nameDict[connIdx], 'exit, ', len(sockList), ' person left')
-    sendToOthers(connIdx, '[Dis]:[' + nameDict[connIdx] + ']', 'broadcast')  # 告诉其他人自己离开
+    sendToOthers(connIdx, '[' + nameDict[connIdx] + '] 离开了', 'broadcast')  # 告诉其他人自己离开
     mutex.acquire()
     nameDict.pop(connIdx)  # 从在线人员昵称列表中删除自己
     mutex.release()
@@ -187,13 +158,11 @@ def leave(myConn, connIdx):
 
 if __name__ == '__main__':
 
-    nameDict = dict()  # 当前在线人员昵称列表
-    sockList = list()  # 当前客户端socket列表
+    nameDict = dict()       # 当前在线人员昵称列表
+    sockList = list()       # 当前客户端socket列表
     readyList = list()      # 已准备列表
     timeoutList = list()    # 超时列表
     winList = list()        # winner list
-    win = False             # 有人已经赢了，避免win和多个timeout同时发送
-    someoneleft = False     # 有人中途离开了
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('0.0.0.0', 8888))
@@ -205,10 +174,6 @@ if __name__ == '__main__':
     sendThread = threading.Thread(target=MainThreadFunc)
     sendThread.start()
 
-    # 启动一个系统通知线程用于udp传输点
-    # udpThread = threading.Thread(target=udpThreadFunc)
-    # udpThread.start()
-
     # 循环等待客户端接入
     while True:
         connection, address = sock.accept()  # 阻塞接入客户端
@@ -218,7 +183,6 @@ if __name__ == '__main__':
             buf = connection.recv(1024).decode()
             if buf == 'link start':
                 connection.send('link finish'.encode())
-                # connection.send(('[decide]:[' + str(len(sockList)) + ']\n').encode())
 
                 # 为当前连接开辟一个新的线程
                 myThread = threading.Thread(target=subThreadFunc, args=(connection, connection.fileno()))
@@ -226,7 +190,6 @@ if __name__ == '__main__':
                 myThread.start()
 
             else:
-                # connection.send('guna! ╰（‵□′）╯'.encode())
                 connection.close()
         except Exception as exception:
             print('159 exception is : %s' % exception)
