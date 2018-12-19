@@ -4,13 +4,15 @@ from PyQt5.QtNetwork import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+IPADDR = "172.20.10.8"
+
 class App(QWidget):
  
     def __init__(self):
         super().__init__()
         self.sock = QTcpSocket()
         self.udpSocket = QUdpSocket()
-        self.account = {"admin": "admin", "user": "user", "luna": "luna"}
+        self.account = {"admin": "admin", "user": "user", "test": "test"}
         self.title = 'Login Interface'
         self.width = 240
         self.height = 180
@@ -50,8 +52,10 @@ class App(QWidget):
         self.formGroupBox.setLayout(layout)
 
     def connect(self):
-        self.sock.connectToHost("192.168.1.100", 8888)
-        self.udpSocket.bind(8080)
+        self.sock.connectToHost(IPADDR, 8888)
+        # self.udpSocket.bind(8080)
+        self.udpSocket.bind(QHostAddress.AnyIPv4, 8080)
+        self.udpSocket.joinMulticastGroup(QHostAddress("224.0.0.1"))
         print('UDP is listening port 8080')
         linkmessage = b'link start'
         if self.sock.isWritable():

@@ -185,7 +185,7 @@ class Game(QWidget):
                 if i == len(points) - 1 or len(text) > 950:
                     message = bytes(text, encoding="utf-8")
                     print(message)
-                    self.udpSocket.writeDatagram(message, QHostAddress("192.168.1.101"), 8080)
+                    self.udpSocket.writeDatagram(message, QHostAddress("224.0.0.1"), 8080)
                     text = ""
 
     def slotreadyread(self):
